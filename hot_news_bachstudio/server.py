@@ -739,8 +739,8 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
     raise ValueError(f"未知的工具: {name}")
 
 
-async def main():
-    """主函数"""
+async def async_main():
+    """异步主函数"""
     try:
         async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
             logger.info("超级今日热点 MCP 服务器启动中...")
@@ -753,5 +753,10 @@ async def main():
         await api.close()
 
 
+def main():
+    """同步入口点，供命令行调用"""
+    asyncio.run(async_main())
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

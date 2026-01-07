@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "hot-news": {
+      "command": "uvx",
+      "args": [
+        "hot-news-bachstudio"
+      ]
+    }
+  }
+}
+
