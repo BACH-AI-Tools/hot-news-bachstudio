@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "hot-news": {
+      "command": "python",
+      "args": [
+        "/Users/dengpengfei/Desktop/超级今日热点/server.py"
+      ]
+    }
+  }
+}
+
