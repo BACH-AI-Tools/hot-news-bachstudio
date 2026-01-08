@@ -3,7 +3,7 @@
 获取全网主流平台的新闻热点
 """
 
-__version__ = "3.0.1"
+__version__ = "3.1.0"
 __author__ = "BachStudio"
 __email__ = "contact@bachstudio.com"
 

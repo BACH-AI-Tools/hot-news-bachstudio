@@ -528,80 +528,7 @@ class HotNewsAPI:
 api = HotNewsAPI()
 
 
-@app.list_resources()
-async def list_resources() -> list[Resource]:
-    """列出所有可用的资源"""
-    return [
-        Resource(uri="hot://weibo", name="微博热搜", mimeType="application/json", description="微博实时热搜榜单"),
-        Resource(uri="hot://zhihu", name="知乎热榜", mimeType="application/json", description="知乎热榜内容"),
-        Resource(uri="hot://baidu", name="百度热搜", mimeType="application/json", description="百度实时热搜"),
-        Resource(uri="hot://douyin", name="抖音热点", mimeType="application/json", description="抖音热点话题"),
-        Resource(uri="hot://bilibili", name="B站热门", mimeType="application/json", description="B站热门视频"),
-        Resource(uri="hot://toutiao", name="今日头条", mimeType="application/json", description="今日头条热点"),
-        Resource(uri="hot://36kr", name="36氪", mimeType="application/json", description="36氪科技资讯"),
-        Resource(uri="hot://ithome", name="IT之家", mimeType="application/json", description="IT之家科技新闻"),
-        Resource(uri="hot://thepaper", name="澎湃新闻", mimeType="application/json", description="澎湃新闻热点"),
-        Resource(uri="hot://v2ex", name="V2EX", mimeType="application/json", description="V2EX技术社区热帖"),
-        Resource(uri="hot://juejin", name="掘金", mimeType="application/json", description="掘金技术文章"),
-        Resource(uri="hot://github", name="GitHub", mimeType="application/json", description="GitHub热门项目"),
-        Resource(uri="hot://sspai", name="少数派", mimeType="application/json", description="少数派效率工具"),
-        Resource(uri="hot://csdn", name="CSDN", mimeType="application/json", description="CSDN技术博客热榜"),
-        Resource(uri="hot://oschina", name="开源中国", mimeType="application/json", description="开源中国技术资讯"),
-        Resource(uri="hot://segmentfault", name="SegmentFault", mimeType="application/json", description="SegmentFault技术问答"),
-        Resource(uri="hot://cnblogs", name="博客园", mimeType="application/json", description="博客园技术博客"),
-        Resource(uri="hot://infoq", name="InfoQ", mimeType="application/json", description="InfoQ技术资讯"),
-        Resource(uri="hot://jianshu", name="简书", mimeType="application/json", description="简书热门文章"),
-        Resource(uri="hot://zaobao", name="前端早报", mimeType="application/json", description="前端技术早报"),
-        Resource(uri="hot://all", name="全部热点", mimeType="application/json", description="所有平台的热点新闻"),
-    ]
-
-
-@app.read_resource()
-async def read_resource(uri: str) -> str:
-    """读取资源内容"""
-    platform_map = {
-        "hot://weibo": ("微博", api.get_weibo_hot),
-        "hot://zhihu": ("知乎", api.get_zhihu_hot),
-        "hot://baidu": ("百度", api.get_baidu_hot),
-        "hot://douyin": ("抖音", api.get_douyin_hot),
-        "hot://bilibili": ("B站", api.get_bilibili_hot),
-        "hot://toutiao": ("今日头条", api.get_toutiao_hot),
-        "hot://36kr": ("36氪", api.get_36kr_hot),
-        "hot://ithome": ("IT之家", api.get_ithome_hot),
-        "hot://thepaper": ("澎湃新闻", api.get_thepaper_hot),
-        "hot://v2ex": ("V2EX", api.get_v2ex_hot),
-        "hot://juejin": ("掘金", api.get_juejin_hot),
-        "hot://github": ("GitHub", api.get_github_trending),
-        "hot://sspai": ("少数派", api.get_sspai_hot),
-        "hot://csdn": ("CSDN", api.get_csdn_hot),
-        "hot://oschina": ("开源中国", api.get_oschina_hot),
-        "hot://segmentfault": ("SegmentFault", api.get_segmentfault_hot),
-        "hot://cnblogs": ("博客园", api.get_cnblogs_hot),
-        "hot://infoq": ("InfoQ", api.get_infoq_hot),
-        "hot://jianshu": ("简书", api.get_jianshu_hot),
-        "hot://zaobao": ("前端早报", api.get_zaobao_hot),
-    }
-    
-    if uri == "hot://all":
-        data = await api.get_all_hot()
-        result = {
-            "timestamp": datetime.now().isoformat(),
-            "platforms": data
-        }
-        return json.dumps(result, ensure_ascii=False, indent=2)
-    
-    if uri in platform_map:
-        name, func = platform_map[uri]
-        data = await func()
-        result = {
-            "platform": name,
-            "timestamp": datetime.now().isoformat(),
-            "count": len(data),
-            "data": data
-        }
-        return json.dumps(result, ensure_ascii=False, indent=2)
-    
-    raise ValueError(f"未知的资源URI: {uri}")
+# Resources 已移除，只保留 Tools
 
 
 @app.list_tools()
@@ -609,37 +536,28 @@ async def list_tools() -> list[Tool]:
     """列出所有可用的工具"""
     return [
         Tool(
-            name="get_hot_news",
-            description="获取指定平台的热点新闻，返回简洁的标题+链接列表。支持平台: weibo(微博), zhihu(知乎), baidu(百度), douyin(抖音), bilibili(B站), toutiao(今日头条), 36kr(36氪), ithome(IT之家), thepaper(澎湃), v2ex(V2EX), juejin(掘金), github(GitHub), sspai(少数派), csdn(CSDN), oschina(开源中国), segmentfault(思否), cnblogs(博客园), infoq(InfoQ), jianshu(简书), zaobao(前端早报), all(所有)",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "platform": {
-                        "type": "string",
-                        "description": "平台名称",
-                        "enum": ["weibo", "zhihu", "baidu", "douyin", "bilibili", "toutiao", "36kr", "ithome", "thepaper", "v2ex", "juejin", "github", "sspai", "csdn", "oschina", "segmentfault", "cnblogs", "infoq", "jianshu", "zaobao", "all"]
-                    },
-                    "limit": {
-                        "type": "integer",
-                        "description": "返回数量（默认30）",
-                        "default": 30
-                    }
-                },
-                "required": ["platform"]
-            }
-        ),
-        Tool(
-            name="search_hot_news",
-            description="在所有平台中搜索包含关键词的热点新闻",
+            name="search_news",
+            description="搜索当天的热点新闻。可以指定平台搜索，也可以搜索所有平台。支持的平台: douyin(抖音), bilibili(B站), toutiao(今日头条), thepaper(澎湃新闻), csdn(CSDN), github(GitHub), v2ex(V2EX), 36kr(36氪), all(所有平台)",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "keyword": {
                         "type": "string",
-                        "description": "搜索关键词"
+                        "description": "搜索关键词，留空则返回所有热点"
+                    },
+                    "platform": {
+                        "type": "string",
+                        "description": "平台名称，默认搜索所有平台",
+                        "enum": ["douyin", "bilibili", "toutiao", "thepaper", "csdn", "github", "v2ex", "36kr", "all"],
+                        "default": "all"
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "返回数量，默认20",
+                        "default": 20
                     }
                 },
-                "required": ["keyword"]
+                "required": []
             }
         )
     ]
@@ -648,93 +566,67 @@ async def list_tools() -> list[Tool]:
 @app.call_tool()
 async def call_tool(name: str, arguments: Any) -> list[TextContent]:
     """调用工具"""
-    if name == "get_hot_news":
+    if name == "search_news":
+        keyword = arguments.get("keyword", "")
         platform = arguments.get("platform", "all")
-        limit = arguments.get("limit", 30)
+        limit = arguments.get("limit", 20)
         
+        # 平台映射（只包含可用的）
         platform_map = {
-            "weibo": ("微博", api.get_weibo_hot),
-            "zhihu": ("知乎", api.get_zhihu_hot),
-            "baidu": ("百度", api.get_baidu_hot),
-            "douyin": ("抖音", api.get_douyin_hot),
-            "bilibili": ("B站", api.get_bilibili_hot),
-            "toutiao": ("今日头条", api.get_toutiao_hot),
-            "36kr": ("36氪", api.get_36kr_hot),
-            "ithome": ("IT之家", api.get_ithome_hot),
-            "thepaper": ("澎湃新闻", api.get_thepaper_hot),
-            "v2ex": ("V2EX", api.get_v2ex_hot),
-            "juejin": ("掘金", api.get_juejin_hot),
-            "github": ("GitHub", api.get_github_trending),
-            "sspai": ("少数派", api.get_sspai_hot),
-            "csdn": ("CSDN", api.get_csdn_hot),
-            "oschina": ("开源中国", api.get_oschina_hot),
-            "segmentfault": ("SegmentFault", api.get_segmentfault_hot),
-            "cnblogs": ("博客园", api.get_cnblogs_hot),
-            "infoq": ("InfoQ", api.get_infoq_hot),
-            "jianshu": ("简书", api.get_jianshu_hot),
-            "zaobao": ("前端早报", api.get_zaobao_hot),
+            "douyin": api.get_douyin_hot,
+            "bilibili": api.get_bilibili_hot,
+            "toutiao": api.get_toutiao_hot,
+            "thepaper": api.get_thepaper_hot,
+            "csdn": api.get_csdn_hot,
+            "github": api.get_github_trending,
+            "v2ex": api.get_v2ex_hot,
+            "36kr": api.get_36kr_hot,
         }
         
+        # 获取数据
         if platform == "all":
-            data = await api.get_all_hot()
-            for p in data:
-                data[p] = data[p][:limit]
-            
-            # 生成简洁的汇总列表
-            lines = [f"📱 全网热点汇总 ({datetime.now().strftime('%Y-%m-%d %H:%M')})\n"]
-            
-            for platform_key, items in data.items():
-                if items:
-                    platform_name = items[0].get('platform', platform_key)
-                    lines.append(f"\n{'='*50}")
-                    lines.append(f"【{platform_name}】 共 {len(items)} 条")
-                    lines.append('='*50)
-                    for item in items[:10]:  # 每个平台显示前10条
-                        lines.append(f"{item['rank']}. {item['title']}")
-                        lines.append(f"   🔗 {item['url']}\n")
-            
-            return [TextContent(type="text", text="\n".join(lines))]
+            # 获取所有平台
+            all_data = await api.get_all_hot()
+            results = []
+            for platform_key, items in all_data.items():
+                results.extend(items)
         else:
+            # 获取指定平台
             if platform not in platform_map:
-                return [TextContent(type="text", text=f"错误: 不支持的平台 '{platform}'")]
+                return [TextContent(
+                    type="text",
+                    text=json.dumps({
+                        "error": f"不支持的平台: {platform}",
+                        "available_platforms": list(platform_map.keys())
+                    }, ensure_ascii=False)
+                )]
             
-            name, func = platform_map[platform]
-            data = await func()
-            data = data[:limit]
-            
-            if not data:
-                return [TextContent(type="text", text=f"【{name}】暂无数据")]
-            
-            # 生成简洁列表
-            lines = [f"【{name}】热点 ({datetime.now().strftime('%Y-%m-%d %H:%M')})\n"]
-            for item in data:
-                lines.append(f"{item['rank']}. {item['title']}")
-                lines.append(f"   🔗 {item['url']}\n")
-            
-            return [TextContent(type="text", text="\n".join(lines))]
-    
-    elif name == "search_hot_news":
-        keyword = arguments.get("keyword", "")
-        if not keyword:
-            return [TextContent(type="text", text="错误: 请提供搜索关键词")]
+            func = platform_map[platform]
+            results = await func()
         
-        all_data = await api.get_all_hot()
+        # 关键词过滤
+        if keyword:
+            results = [
+                item for item in results 
+                if keyword.lower() in item.get('title', '').lower()
+            ]
         
-        results = []
-        for platform, items in all_data.items():
-            for item in items:
-                if keyword.lower() in item.get('title', '').lower():
-                    results.append(item)
+        # 限制数量
+        results = results[:limit]
         
-        if not results:
-            return [TextContent(type="text", text=f"未找到包含 '{keyword}' 的热点")]
+        # 返回简单的数组格式
+        news_list = [
+            {
+                "title": item.get('title', ''),
+                "url": item.get('url', '')
+            }
+            for item in results
+        ]
         
-        lines = [f"🔍 搜索结果: '{keyword}' (共找到 {len(results)} 条)\n"]
-        for idx, item in enumerate(results[:50], 1):  # 最多显示50条
-            lines.append(f"{idx}. [{item['platform']}] {item['title']}")
-            lines.append(f"   🔗 {item['url']}\n")
-        
-        return [TextContent(type="text", text="\n".join(lines))]
+        return [TextContent(
+            type="text",
+            text=json.dumps(news_list, ensure_ascii=False, indent=2)
+        )]
     
     raise ValueError(f"未知的工具: {name}")
 
